@@ -10,8 +10,17 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 2rem;
-  text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .app-header h1 {
@@ -19,6 +28,32 @@
   font-size: 2.5rem;
   font-weight: 300;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-name {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.logout-button,
+.login-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.logout-button:hover,
+.login-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Main Content Layout */
@@ -100,5 +135,47 @@
   
   .weather-chart {
     height: 250px;
+  }
+}
+
+.chart-section {
+  height: max-content;
+}
+
+.weather-chart {
+  height: max-content;
+}
+
+.admin-info {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.p-password {
+  width: 100%;
+}
+
+.login-hint {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.login-form {
+  margin-top: 1rem;
+  .field {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.p-inputtext, .p-password-input, .p-icon-field, .login-button-submit {
+  width: 100%;
+}
+
+.admin-info {
+  .pi-info-circle {
+    margin-right: 5px;
   }
 }
