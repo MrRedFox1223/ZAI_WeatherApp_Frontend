@@ -8,6 +8,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { useAuth } from '../context/AuthContext';
 import { flatWeatherData } from '../data/weatherData';
+import { addLocale } from 'primereact/api';
 
 const WeatherTable = ({ data: externalData, onDataChange }) => {
   const { isAdmin } = useAuth();
@@ -91,8 +92,15 @@ const WeatherTable = ({ data: externalData, onDataChange }) => {
     const minDate = new Date(1900, 0, 1);
     const maxDate = new Date(2100, 11, 31);
 
-    // Polska lokalizacja dla Calendar
-    const plLocale = {
+    // Funkcja konwertująca datę na string YYYY-MM-DD bez przesunięcia czasowego
+    const formatDateToString = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    addLocale('pl', {
       firstDayOfWeek: 1,
       dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
       dayNamesShort: ['Nie', 'Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob'],
@@ -104,14 +112,15 @@ const WeatherTable = ({ data: externalData, onDataChange }) => {
       weekHeader: 'Tydz',
       dateFormat: 'dd.mm.yy',
       chooseDate: 'Wybierz datę'
-    };
-
+    });
     return (
       <Calendar
+        locale="pl"
         value={dateValue}
         onChange={(e) => {
           if (e.value) {
-            const dateStr = e.value.toISOString().split('T')[0];
+            // Użyj lokalnej daty zamiast UTC, aby uniknąć przesunięcia o jeden dzień
+            const dateStr = formatDateToString(e.value);
             options.editorCallback(dateStr);
           } else {
             options.editorCallback(null);
@@ -120,10 +129,13 @@ const WeatherTable = ({ data: externalData, onDataChange }) => {
         dateFormat="dd.mm.yy"
         minDate={minDate}
         maxDate={maxDate}
+        firstDayOfWeek={1}
         showIcon
         className="w-full"
-        locale={plLocale}
         autoFocus
+        showButtonBar
+        todayButtonClassName="p-button-text"
+        clearButtonClassName="p-button-text"
       />
     );
   };
