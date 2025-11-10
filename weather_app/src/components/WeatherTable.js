@@ -195,22 +195,15 @@ const WeatherTable = ({ data: externalData, onDataChange }) => {
       return;
     }
 
-    // Aktualizacja danych
+    // Aktualizacja danych lokalnie
     const newDataArray = [...data];
     newDataArray[index] = { ...newData };
     setData(newDataArray);
 
-    // Wywołanie callbacka do aktualizacji wykresu
+    // Wywołanie callbacka z tylko zaktualizowanym obiektem (do wysłania do API)
     if (onDataChange) {
-      onDataChange(newDataArray);
+      onDataChange(newData);
     }
-
-    toast.current.show({
-      severity: 'success',
-      summary: 'Sukces',
-      detail: 'Wiersz został zaktualizowany',
-      life: 2000
-    });
   };
 
 

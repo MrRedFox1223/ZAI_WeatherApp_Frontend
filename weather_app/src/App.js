@@ -8,36 +8,84 @@ import WeatherChart from './components/WeatherChart';
 import WeatherTable from './components/WeatherTable';
 import LoginDialog from './components/LoginDialog';
 import { Button } from 'primereact/button';
-import { flatWeatherData } from './data/weatherData';
+import { Toast } from 'primereact/toast';
+import { fetchWeatherData, updateWeatherItem } from './services/weatherApi';
 
 const AppContent = () => {
   const { isAuthenticated, user, logout, isAdmin, isUser } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
-  const [weatherData, setWeatherData] = useState([...flatWeatherData]);
+  const [weatherData, setWeatherData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const toast = React.useRef(null);
 
   // Załaduj dane przy starcie (dla wszystkich użytkowników)
   useEffect(() => {
-    // TODO: Tutaj będzie fetch z API
-    // fetch('/api/weather')
-    //   .then(res => res.json())
-    //   .then(data => setWeatherData(data));
-    setWeatherData([...flatWeatherData]);
+    loadWeatherData();
   }, []);
 
+  // Funkcja do ładowania danych z API
+  const loadWeatherData = async () => {
+    setLoading(true);
+    const result = await fetchWeatherData();
+    
+    if (result.success) {
+      setWeatherData(result.data);
+    } else {
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Błąd',
+        detail: `Nie udało się załadować danych: ${result.error}`,
+        life: 5000
+      });
+      // W przypadku błędu, ustaw pustą tablicę
+      setWeatherData([]);
+    }
+    setLoading(false);
+  };
+
   // Obsługa zmiany danych z tabeli
-  const handleDataChange = (newData) => {
-    setWeatherData(newData);
-    // TODO: Tutaj będzie zapis do API (tylko dla admina)
-    // if (isAdmin) {
-    //   fetch('/api/weather', {
-    //     method: 'PUT',
-    //     headers: { 
-    //       'Content-Type': 'application/json',
-    //       'Authorization': `Bearer ${user.token}`
-    //     },
-    //     body: JSON.stringify(newData)
-    //   });
-    // }
+  const handleDataChange = async (updatedItem) => {
+    if (!isAdmin) {
+      return;
+    }
+
+    // Zapisz poprzednią wartość na wypadek błędu
+    const previousItem = weatherData.find(item => item.id === updatedItem.id);
+    
+    // Aktualizuj lokalnie (optimistic update)
+    setWeatherData(prevData => 
+      prevData.map(item => 
+        item.id === updatedItem.id ? updatedItem : item
+      )
+    );
+
+    // Wysyłamy tylko zaktualizowany obiekt do API
+    const result = await updateWeatherItem(updatedItem);
+    
+    if (result.success) {
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Sukces',
+        detail: 'Dane zostały zaktualizowane',
+        life: 2000
+      });
+    } else {
+      // Cofnij zmiany w przypadku błędu
+      if (previousItem) {
+        setWeatherData(prevData => 
+          prevData.map(item => 
+            item.id === updatedItem.id ? previousItem : item
+          )
+        );
+      }
+      
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Błąd',
+        detail: `Nie udało się zaktualizować danych: ${result.error}. Zmiany zostały cofnięte.`,
+        life: 5000
+      });
+    }
   };
 
   const handleLoginClick = () => {
@@ -55,6 +103,7 @@ const AppContent = () => {
 
   return (
     <div className="App">
+      <Toast ref={toast} />
       <header className="app-header">
         <div className="header-content">
           <h1>Weather Dashboard</h1>
@@ -86,12 +135,21 @@ const AppContent = () => {
         </div>
       </header>
       <main className="app-main">
-        <section className="chart-section">
-          <WeatherChart data={weatherData} />
-        </section>
-        <section className="table-section">
-          <WeatherTable data={weatherData} onDataChange={handleDataChange} />
-        </section>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
+            <p>Ładowanie danych...</p>
+          </div>
+        ) : (
+          <>
+            <section className="chart-section">
+              <WeatherChart data={weatherData} />
+            </section>
+            <section className="table-section">
+              <WeatherTable data={weatherData} onDataChange={handleDataChange} />
+            </section>
+          </>
+        )}
       </main>
       <LoginDialog visible={showLogin} onHide={handleLoginSuccess} />
     </div>

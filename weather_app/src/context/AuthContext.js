@@ -17,28 +17,44 @@ export const AuthProvider = ({ children }) => {
 
   // Funkcja logowania - tylko dla administratora
   const login = async (username, password) => {
-    // TODO: Zamienić na prawdziwe API call do FastAPI
-    // const response = await fetch('/api/auth/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ username, password })
-    // });
-    // const data = await response.json();
-    
-    // Symulacja logowania - tylko admin
-    if (username === 'admin' && password === 'admin') {
-      const userData = {
-        id: 1,
-        username: 'admin',
-        role: 'admin',
-        token: 'mock-token-admin'
+    try {
+      const response = await fetch('http://localhost:8000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        // Jeśli status nie jest OK, spróbuj pobrać komunikat błędu
+        const errorData = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          message: errorData.detail || errorData.message || `Błąd logowania: ${response.status}`,
+        };
+      }
+
+      const userData = await response.json();
+      
+      // Sprawdź czy użytkownik ma rolę admin
+      if (userData.role === 'admin') {
+        setUser(userData);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(userData));
+        return { success: true, user: userData };
+      } else {
+        return {
+          success: false,
+          message: 'Tylko administrator może się zalogować.',
+        };
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      return {
+        success: false,
+        message: `Wystąpił błąd podczas logowania: ${error.message}`,
       };
-      setUser(userData);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userData));
-      return { success: true, user: userData };
-    } else {
-      return { success: false, message: 'Nieprawidłowe dane logowania. Tylko administrator może się zalogować.' };
     }
   };
 

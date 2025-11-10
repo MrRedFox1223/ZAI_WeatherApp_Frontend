@@ -93,9 +93,8 @@ const LoginDialog = ({ visible, onHide }) => {
         )}
 
         <div className="login-hint mt-4 p-3" style={{ backgroundColor: '#f0f0f0', borderRadius: '4px', fontSize: '0.9rem' }}>
-          <strong>Logowanie jako Administrator:</strong><br />
-          Nazwa użytkownika: admin<br />
-          Hasło: admin
+          <strong>Logowanie:</strong><br />
+          Wprowadź dane administratora, aby uzyskać dostęp do edycji danych.
         </div>
 
         <Button
