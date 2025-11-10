@@ -6,13 +6,21 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import { Dialog } from 'primereact/dialog';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useAuth } from '../context/AuthContext';
 import { flatWeatherData } from '../data/weatherData';
 import { addLocale } from 'primereact/api';
 
-const WeatherTable = ({ data: externalData, onDataChange }) => {
+const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete }) => {
   const { isAdmin } = useAuth();
   const [data, setData] = useState(externalData || [...flatWeatherData]);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [newItem, setNewItem] = useState({
+    city_name: '',
+    date: '',
+    temperature: null
+  });
   const toast = React.useRef(null);
 
   // Synchronizuj dane gdy zmienią się z zewnątrz
@@ -58,6 +66,14 @@ const WeatherTable = ({ data: externalData, onDataChange }) => {
     return new Date(rowData.date).toLocaleDateString('pl-PL');
   };
 
+  // Funkcja konwertująca datę na string YYYY-MM-DD bez przesunięcia czasowego
+  const formatDateToString = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // Edytor dla nazwy miasta
   const cityEditor = (options) => {
     return (
@@ -91,14 +107,6 @@ const WeatherTable = ({ data: externalData, onDataChange }) => {
     const dateValue = options.value ? new Date(options.value) : null;
     const minDate = new Date(1900, 0, 1);
     const maxDate = new Date(2100, 11, 31);
-
-    // Funkcja konwertująca datę na string YYYY-MM-DD bez przesunięcia czasowego
-    const formatDateToString = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
 
     addLocale('pl', {
       firstDayOfWeek: 1,
@@ -206,15 +214,120 @@ const WeatherTable = ({ data: externalData, onDataChange }) => {
     }
   };
 
+  // Obsługa dodawania nowego elementu
+  const handleAddClick = () => {
+    setNewItem({
+      city_name: '',
+      date: '',
+      temperature: null
+    });
+    setShowAddDialog(true);
+  };
+
+  const handleAddSubmit = () => {
+    // Walidacja
+    if (!newItem.city_name || newItem.city_name.trim() === '') {
+      toast.current.show({
+        severity: 'error',
+        summary: 'Błąd walidacji',
+        detail: 'Nazwa miasta jest wymagana',
+        life: 3000
+      });
+      return;
+    }
+
+    if (!newItem.date) {
+      toast.current.show({
+        severity: 'error',
+        summary: 'Błąd walidacji',
+        detail: 'Data jest wymagana',
+        life: 3000
+      });
+      return;
+    }
+
+    const tempValidation = validateTemperature(newItem.temperature);
+    if (!tempValidation.valid) {
+      toast.current.show({
+        severity: 'error',
+        summary: 'Błąd walidacji',
+        detail: tempValidation.message,
+        life: 3000
+      });
+      return;
+    }
+
+    const dateValidation = validateDate(newItem.date);
+    if (!dateValidation.valid) {
+      toast.current.show({
+        severity: 'error',
+        summary: 'Błąd walidacji',
+        detail: dateValidation.message,
+        life: 3000
+      });
+      return;
+    }
+
+    // Wywołaj callback
+    if (onAdd) {
+      onAdd({
+        city_name: newItem.city_name.trim(),
+        date: newItem.date,
+        temperature: newItem.temperature
+      });
+    }
+
+    setShowAddDialog(false);
+  };
+
+  // Obsługa usuwania elementu
+  const handleDeleteClick = (rowData) => {
+    confirmDialog({
+      message: `Czy na pewno chcesz usunąć wpis dla miasta "${rowData.city_name}" z datą ${new Date(rowData.date).toLocaleDateString('pl-PL')}?`,
+      header: 'Potwierdzenie usunięcia',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        if (onDelete) {
+          onDelete(rowData.id);
+        }
+      }
+    });
+  };
+
+  // Przycisk akcji (usuwanie) dla wiersza
+  const actionBodyTemplate = (rowData) => {
+    if (!isAdmin) return null;
+    
+    return (
+      <Button
+        icon="pi pi-trash"
+        className="p-button-rounded p-button-text p-button-danger"
+        onClick={() => handleDeleteClick(rowData)}
+        tooltip="Usuń"
+        tooltipOptions={{ position: 'top' }}
+      />
+    );
+  };
 
   return (
     <div className="weather-table">
       <Toast ref={toast} />
+      <ConfirmDialog />
       {isAdmin && (
-        <div className="mb-3 p-3 admin-info" style={{ backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
-          <i className="pi pi-info-circle mr-2"></i>
-          <strong>Tryb administratora:</strong> Kliknij ikonę ołówka w wierszu, aby rozpocząć edycję. Użyj przycisków ✓ i ✗ aby zapisać lub anulować zmiany.
-        </div>
+        <>
+          <div className="mb-3 p-3 admin-info" style={{ backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
+            <i className="pi pi-info-circle mr-2"></i>
+            <strong>Tryb administratora:</strong> Kliknij ikonę ołówka w wierszu, aby rozpocząć edycję. Użyj przycisków ✓ i ✗ aby zapisać lub anulować zmiany.
+          </div>
+          <div className="mb-3">
+            <Button
+              label="Dodaj nowe dane"
+              icon="pi pi-plus"
+              onClick={handleAddClick}
+              className="p-button-success"
+            />
+          </div>
+        </>
       )}
       <DataTable
         value={data}
@@ -255,9 +368,16 @@ const WeatherTable = ({ data: externalData, onDataChange }) => {
           header="Temperatura"
           body={temperatureTemplate}
           sortable
-          style={{ width: '25%' }}
+          style={{ width: '20%' }}
           editor={isAdmin ? temperatureEditor : undefined}
         />
+        {isAdmin && (
+          <Column
+            body={actionBodyTemplate}
+            header="Akcje"
+            style={{ width: '10%', textAlign: 'center' }}
+          />
+        )}
         {isAdmin && (
           <Column
           rowEditor={true} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}>
@@ -266,6 +386,87 @@ const WeatherTable = ({ data: externalData, onDataChange }) => {
           </Column>
         )}
       </DataTable>
+
+      {/* Dialog do dodawania nowych danych */}
+      <Dialog
+        header="Dodaj nowe dane"
+        visible={showAddDialog}
+        style={{ width: '500px' }}
+        onHide={() => setShowAddDialog(false)}
+        modal
+      >
+        <div className="p-fluid">
+          <div className="field">
+            <label htmlFor="new-city" className="block mb-2">
+              Nazwa miasta *
+            </label>
+            <InputText
+              id="new-city"
+              value={newItem.city_name}
+              onChange={(e) => setNewItem({ ...newItem, city_name: e.target.value })}
+              className="w-full"
+              placeholder="Wprowadź nazwę miasta"
+            />
+          </div>
+
+          <div className="field mt-4">
+            <label htmlFor="new-date" className="block mb-2">
+              Data *
+            </label>
+            <Calendar
+              id="new-date"
+              value={newItem.date ? new Date(newItem.date) : null}
+              onChange={(e) => {
+                if (e.value) {
+                  const dateStr = formatDateToString(e.value);
+                  setNewItem({ ...newItem, date: dateStr });
+                } else {
+                  setNewItem({ ...newItem, date: '' });
+                }
+              }}
+              dateFormat="dd.mm.yy"
+              minDate={new Date(1900, 0, 1)}
+              maxDate={new Date(2100, 11, 31)}
+              firstDayOfWeek={1}
+              showIcon
+              className="w-full"
+              showButtonBar
+            />
+          </div>
+
+          <div className="field mt-4">
+            <label htmlFor="new-temperature" className="block mb-2">
+              Temperatura (°C) *
+            </label>
+            <InputNumber
+              id="new-temperature"
+              value={newItem.temperature}
+              onValueChange={(e) => setNewItem({ ...newItem, temperature: e.value })}
+              min={-100}
+              max={100}
+              suffix="°C"
+              className="w-full"
+              useGrouping={false}
+              placeholder="Wprowadź temperaturę"
+            />
+          </div>
+
+          <div className="flex justify-content-end gap-2 mt-4">
+            <Button
+              label="Anuluj"
+              icon="pi pi-times"
+              onClick={() => setShowAddDialog(false)}
+              className="p-button-text"
+            />
+            <Button
+              label="Dodaj"
+              icon="pi pi-check"
+              onClick={handleAddSubmit}
+              className="p-button-success"
+            />
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };

@@ -9,7 +9,7 @@ import WeatherTable from './components/WeatherTable';
 import LoginDialog from './components/LoginDialog';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { fetchWeatherData, updateWeatherItem } from './services/weatherApi';
+import { fetchWeatherData, updateWeatherItem, createWeatherItem, deleteWeatherItem } from './services/weatherApi';
 
 const AppContent = () => {
   const { isAuthenticated, user, logout, isAdmin, isUser } = useAuth();
@@ -88,6 +88,70 @@ const AppContent = () => {
     }
   };
 
+  // Obsługa dodawania nowych danych
+  const handleAdd = async (newItem) => {
+    if (!isAdmin) {
+      return;
+    }
+
+    const result = await createWeatherItem(newItem);
+    
+    if (result.success) {
+      // Dodaj nowy element do lokalnego stanu
+      setWeatherData(prevData => [...prevData, result.data]);
+      
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Sukces',
+        detail: 'Nowe dane zostały dodane',
+        life: 2000
+      });
+    } else {
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Błąd',
+        detail: `Nie udało się dodać danych: ${result.error}`,
+        life: 5000
+      });
+    }
+  };
+
+  // Obsługa usuwania danych
+  const handleDelete = async (id) => {
+    if (!isAdmin) {
+      return;
+    }
+
+    // Zapisz element do usunięcia na wypadek błędu
+    const itemToDelete = weatherData.find(item => item.id === id);
+    
+    // Usuń lokalnie (optimistic update)
+    setWeatherData(prevData => prevData.filter(item => item.id !== id));
+
+    const result = await deleteWeatherItem(id);
+    
+    if (result.success) {
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Sukces',
+        detail: 'Dane zostały usunięte',
+        life: 2000
+      });
+    } else {
+      // Przywróć element w przypadku błędu
+      if (itemToDelete) {
+        setWeatherData(prevData => [...prevData, itemToDelete].sort((a, b) => a.id - b.id));
+      }
+      
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Błąd',
+        detail: `Nie udało się usunąć danych: ${result.error}. Zmiany zostały cofnięte.`,
+        life: 5000
+      });
+    }
+  };
+
   const handleLoginClick = () => {
     setShowLogin(true);
   };
@@ -146,7 +210,12 @@ const AppContent = () => {
               <WeatherChart data={weatherData} />
             </section>
             <section className="table-section">
-              <WeatherTable data={weatherData} onDataChange={handleDataChange} />
+              <WeatherTable 
+                data={weatherData} 
+                onDataChange={handleDataChange}
+                onAdd={handleAdd}
+                onDelete={handleDelete}
+              />
             </section>
           </>
         )}
