@@ -347,7 +347,7 @@ const AppContent = () => {
               </>
             ) : (
               <Button
-                label="Zaloguj jako Administrator"
+                label="Zaloguj"
                 icon="pi pi-sign-in"
                 onClick={handleLoginClick}
                 className="login-button"

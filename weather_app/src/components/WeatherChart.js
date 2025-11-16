@@ -80,10 +80,10 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
       };
     });
 
-    // Format dates for display
+    // Format dates for display - format: dzień.miesiąc.rok
     const formattedDates = dates.map(date => {
       const d = new Date(date);
-      return d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit' });
+      return d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
     });
 
     return {
@@ -110,7 +110,7 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
       },
       title: {
         display: true,
-        text: 'Zmiany temperatury w czasie - 10 miast',
+        text: 'Średnia temperatura dobowa dla różnych miast',
         font: {
           size: 16
         }
