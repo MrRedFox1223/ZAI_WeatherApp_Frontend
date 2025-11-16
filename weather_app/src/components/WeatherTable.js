@@ -12,7 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { flatWeatherData } from '../data/weatherData';
 import { addLocale } from 'primereact/api';
 
-const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete }) => {
+const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHighlightPoint, highlightedPoint }) => {
   const { isAdmin } = useAuth();
   const [data, setData] = useState(externalData || [...flatWeatherData]);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -294,8 +294,26 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete }) => 
     });
   };
 
-  // Przycisk akcji (usuwanie) dla wiersza
-  const actionBodyTemplate = (rowData) => {
+  // Przycisk podświetlania dla wiersza (dostępny dla wszystkich)
+  const highlightActionTemplate = (rowData) => {
+    const isHighlighted = highlightedPoint && 
+      highlightedPoint.id === rowData.id &&
+      highlightedPoint.city_name === rowData.city_name &&
+      highlightedPoint.date === rowData.date;
+    
+    return (
+      <Button
+        icon={isHighlighted ? "pi pi-eye-slash" : "pi pi-eye"}
+        className={`p-button-rounded p-button-text ${isHighlighted ? 'p-button-warning' : 'p-button-info'}`}
+        onClick={() => onHighlightPoint && onHighlightPoint(rowData)}
+        tooltip={isHighlighted ? "Wyłącz podświetlenie" : "Podświetl na wykresie"}
+        tooltipOptions={{ position: 'top' }}
+      />
+    );
+  };
+
+  // Przycisk akcji (usuwanie) dla wiersza - tylko dla adminów
+  const editActionTemplate = (rowData) => {
     if (!isAdmin) return null;
     
     return (
@@ -371,10 +389,15 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete }) => 
           style={{ width: '20%' }}
           editor={isAdmin ? temperatureEditor : undefined}
         />
+        <Column
+          body={highlightActionTemplate}
+          header="Akcje"
+          style={{ width: '10%', textAlign: 'center' }}
+        />
         {isAdmin && (
           <Column
-            body={actionBodyTemplate}
-            header="Akcje"
+            body={editActionTemplate}
+            header="Edycja"
             style={{ width: '10%', textAlign: 'center' }}
           />
         )}

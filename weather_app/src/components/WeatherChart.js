@@ -15,7 +15,7 @@ const cityColors = [
   { border: '#00BCD4', background: 'rgba(0, 188, 212, 0.2)' }  // Barcelona - Cyan
 ];
 
-const WeatherChart = memo(({ data }) => {
+const WeatherChart = memo(({ data, highlightedPoint }) => {
 
   // Memoize chart data to prevent unnecessary recalculations
   const chartData = useMemo(() => {
@@ -37,19 +37,48 @@ const WeatherChart = memo(({ data }) => {
     });
 
     // Create datasets for each city
-    const datasets = cities.map((city, index) => ({
-      label: city,
-      data: cityDataMap[city],
-      borderColor: cityColors[index % cityColors.length].border,
-      backgroundColor: cityColors[index % cityColors.length].background,
-      tension: 0.4,
-      fill: false,
-      spanGaps: true, // Łącz linię przez brakujące dane (null wartości) - linia łączy punkty niezależnie od przerw czasowych
-      pointRadius: 4,
-      pointHoverRadius: 6,
-      pointBackgroundColor: cityColors[index % cityColors.length].border,
-      showLine: true // Upewnij się, że linia jest wyświetlana
-    }));
+    const datasets = cities.map((city, index) => {
+      const cityColor = cityColors[index % cityColors.length];
+      const isHighlightedCity = highlightedPoint && highlightedPoint.city_name === city;
+      
+      // Przygotuj tablice kolorów i rozmiarów dla każdego punktu
+      const pointColors = dates.map(date => {
+        if (isHighlightedCity && highlightedPoint && date === highlightedPoint.date) {
+          return '#FFD700'; // Złoty kolor dla podświetlonego punktu
+        }
+        return cityColor.border; // Standardowy kolor
+      });
+      
+      const pointRadii = dates.map(date => {
+        if (isHighlightedCity && highlightedPoint && date === highlightedPoint.date) {
+          return 10; // Większy rozmiar dla podświetlonego punktu
+        }
+        return 4; // Standardowy rozmiar
+      });
+      
+      const pointBorderWidths = dates.map(date => {
+        if (isHighlightedCity && highlightedPoint && date === highlightedPoint.date) {
+          return 3; // Grubsza ramka dla podświetlonego punktu
+        }
+        return 1; // Standardowa grubość
+      });
+      
+      return {
+        label: city,
+        data: cityDataMap[city],
+        borderColor: cityColor.border, // Kolor linii - używany przez legendę, nie zmienia się
+        backgroundColor: cityColor.background, // Kolor tła - używany przez legendę, nie zmienia się
+        tension: 0.4,
+        fill: false,
+        spanGaps: true, // Łącz linię przez brakujące dane (null wartości) - linia łączy punkty niezależnie od przerw czasowych
+        pointRadius: pointRadii, // Tablica rozmiarów punktów
+        pointHoverRadius: 6,
+        pointBackgroundColor: pointColors, // Tablica kolorów tła punktów - nie wpływa na legendę
+        pointBorderColor: pointColors, // Tablica kolorów ramek punktów - nie wpływa na legendę
+        pointBorderWidth: pointBorderWidths, // Tablica grubości ramek punktów
+        showLine: true // Upewnij się, że linia jest wyświetlana
+      };
+    });
 
     // Format dates for display
     const formattedDates = dates.map(date => {
@@ -61,7 +90,7 @@ const WeatherChart = memo(({ data }) => {
       labels: formattedDates,
       datasets: datasets
     };
-  }, [data]);
+  }, [data, highlightedPoint]);
 
   // Memoize chart options to prevent unnecessary re-renders
   const chartOptions = useMemo(() => ({
@@ -138,6 +167,22 @@ const WeatherChart = memo(({ data }) => {
   // Custom comparison function to prevent re-renders when data hasn't actually changed
   const prevData = prevProps.data || [];
   const nextData = nextProps.data || [];
+  const prevHighlighted = prevProps.highlightedPoint;
+  const nextHighlighted = nextProps.highlightedPoint;
+  
+  // If highlighted point changed, allow re-render
+  if (prevHighlighted !== nextHighlighted) {
+    // Check if both are null/undefined
+    if ((!prevHighlighted && !nextHighlighted) || 
+        (prevHighlighted && nextHighlighted && 
+         prevHighlighted.id === nextHighlighted.id &&
+         prevHighlighted.city_name === nextHighlighted.city_name &&
+         prevHighlighted.date === nextHighlighted.date)) {
+      // Same highlight state, continue with data comparison
+    } else {
+      return false; // Highlight changed, allow re-render
+    }
+  }
   
   // If references are the same, data hasn't changed
   if (prevData === nextData) {

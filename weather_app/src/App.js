@@ -22,6 +22,7 @@ const AppContent = () => {
   const [showDateRangeDialog, setShowDateRangeDialog] = useState(false);
   const [dateRange, setDateRange] = useState(null);
   const [tempDateRange, setTempDateRange] = useState(null);
+  const [highlightedPoint, setHighlightedPoint] = useState(null); // { id, city_name, date }
   const toast = React.useRef(null);
 
   // Dodaj polską lokalizację dla kalendarza
@@ -271,6 +272,26 @@ const AppContent = () => {
     });
   };
 
+  // Obsługa podświetlania punktu na wykresie (toggle)
+  const handleHighlightPoint = (item) => {
+    setHighlightedPoint(prevHighlighted => {
+      // Jeśli kliknięto ten sam punkt, wyłącz podświetlenie
+      if (prevHighlighted && 
+          prevHighlighted.id === item.id &&
+          prevHighlighted.city_name === item.city_name &&
+          prevHighlighted.date === item.date) {
+        return null; // Wyłącz podświetlenie
+      }
+      
+      // Włącz podświetlenie dla nowego punktu (stare automatycznie się wyłączy)
+      return {
+        id: item.id,
+        city_name: item.city_name,
+        date: item.date
+      };
+    });
+  };
+
   // Footer dialogu z zakresem dat
   const dateRangeDialogFooter = (
     <div>
@@ -331,7 +352,7 @@ const AppContent = () => {
         ) : (
           <>
             <section className="chart-section">
-              <WeatherChart data={filteredWeatherData} />
+              <WeatherChart data={filteredWeatherData} highlightedPoint={highlightedPoint} />
               <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
                 <Button
                   label={dateRange ? 'Zmień zakres dat' : 'Wybierz zakres dat'}
@@ -362,6 +383,8 @@ const AppContent = () => {
                 onDataChange={handleDataChange}
                 onAdd={handleAdd}
                 onDelete={handleDelete}
+                onHighlightPoint={handleHighlightPoint}
+                highlightedPoint={highlightedPoint}
               />
             </section>
           </>
