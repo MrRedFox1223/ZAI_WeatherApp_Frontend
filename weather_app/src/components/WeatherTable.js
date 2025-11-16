@@ -337,14 +337,14 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
             <i className="pi pi-info-circle mr-2"></i>
             <strong>Tryb administratora:</strong> Kliknij ikonę ołówka w wierszu, aby rozpocząć edycję. Użyj przycisków ✓ i ✗ aby zapisać lub anulować zmiany.
           </div>
-          <div className="mb-3">
-            <Button
-              label="Dodaj nowe dane"
-              icon="pi pi-plus"
-              onClick={handleAddClick}
-              className="p-button-success"
-            />
-          </div>
+           <div className="mb-3" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+             <Button
+               label="Dodaj nowe dane"
+               icon="pi pi-plus"
+               onClick={handleAddClick}
+               className="p-button-success"
+             />
+           </div>
         </>
       )}
       <DataTable
@@ -392,22 +392,22 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
         <Column
           body={highlightActionTemplate}
           header="Akcje"
-          style={{ width: '10%', textAlign: 'center' }}
+          style={{ width: '10%', textAlign: 'left' }}
         />
-        {isAdmin && (
-          <Column
-            body={editActionTemplate}
-            header="Edycja"
-            style={{ width: '10%', textAlign: 'center' }}
-          />
-        )}
-        {isAdmin && (
-          <Column
-          rowEditor={true} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}>
-            <Button icon="pi pi-check" severity="success" onClick={onRowEditSave} />
-            <Button icon="pi pi-times" severity="danger" onClick={onRowEditCancel} />
-          </Column>
-        )}
+         {isAdmin && (
+           <Column
+             body={editActionTemplate}
+             header="Usuń"
+             style={{ width: '10%', textAlign: 'left' }}
+           />
+         )}
+          {isAdmin && (
+            <Column
+            rowEditor={true} header="Edytuj" headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'left' }}>
+              <Button icon="pi pi-check" severity="success" className="p-button-rounded p-button-text" onClick={onRowEditSave} />
+              <Button icon="pi pi-times" severity="danger" className="p-button-rounded p-button-text" onClick={onRowEditCancel} />
+            </Column>
+          )}
       </DataTable>
 
       {/* Dialog do dodawania nowych danych */}

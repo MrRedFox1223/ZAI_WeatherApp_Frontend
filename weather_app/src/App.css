@@ -187,3 +187,17 @@
   }
 }
 
+/* Upewnij się, że wszystkie przyciski w tabeli mają jednakowy rozmiar i efekt hover */
+.p-datatable .p-button-rounded.p-button-text {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.p-datatable .p-button-rounded.p-button-text:hover {
+  transform: scale(1.1);
+}
+

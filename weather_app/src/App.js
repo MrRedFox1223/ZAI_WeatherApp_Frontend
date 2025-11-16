@@ -321,7 +321,7 @@ const AppContent = () => {
       <Toast ref={toast} />
       <header className="app-header">
         <div className="header-content">
-          <h1>Weather Dashboard</h1>
+          <h1>Dane pogodowe</h1>
           <div className="user-info">
             <Button
               label="Drukuj"
