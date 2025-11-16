@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import WeatherChart from './components/WeatherChart';
 import WeatherTable from './components/WeatherTable';
 import LoginDialog from './components/LoginDialog';
+import ChangePasswordDialog from './components/ChangePasswordDialog';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
@@ -18,6 +19,7 @@ import { fetchWeatherData, updateWeatherItem, createWeatherItem, deleteWeatherIt
 const AppContent = () => {
   const { user, logout, isAdmin } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const [weatherData, setWeatherData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showDateRangeDialog, setShowDateRangeDialog] = useState(false);
@@ -338,6 +340,14 @@ const AppContent = () => {
                   {user?.username} (Administrator)
                 </span>
                 <Button
+                  label="Zmień hasło"
+                  icon="pi pi-key"
+                  onClick={() => setShowChangePassword(true)}
+                  className="change-password-button"
+                  severity="secondary"
+                  outlined
+                />
+                <Button
                   label="Wyloguj"
                   icon="pi pi-sign-out"
                   onClick={handleLogout}
@@ -405,6 +415,10 @@ const AppContent = () => {
         )}
       </main>
       <LoginDialog visible={showLogin} onHide={handleLoginSuccess} />
+      <ChangePasswordDialog
+        visible={showChangePassword}
+        onHide={() => setShowChangePassword(false)}
+      />
       <Dialog
         header="Wybierz zakres dat"
         visible={showDateRangeDialog}

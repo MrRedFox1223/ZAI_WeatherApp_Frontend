@@ -65,6 +65,70 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Funkcja zmiany hasła
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        return {
+          success: false,
+          message: 'Brak autoryzacji. Proszę zalogować się ponownie.',
+        };
+      }
+
+      const response = await fetch('http://localhost:8000/change_password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          old_password: currentPassword,
+          new_password: newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        let errorMessage = errorData.detail || errorData.message || `Błąd zmiany hasła: ${response.status}`;
+        
+        // Tłumacz angielskie komunikaty błędów na polski
+        if (errorMessage.includes('Invalid password') || errorMessage.includes('Current password is incorrect')) {
+          errorMessage = 'Niepoprawne aktualne hasło';
+        } else if (errorMessage.includes('New password') && errorMessage.includes('same')) {
+          errorMessage = 'Nowe hasło musi być inne niż aktualne';
+        }
+        
+        return {
+          success: false,
+          message: errorMessage,
+        };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error during password change:', error);
+      return {
+        success: false,
+        message: `Wystąpił błąd podczas zmiany hasła: ${error.message}`,
+      };
+    }
+  };
+
+  // Funkcja pomocnicza do pobierania tokenu
+  const getAuthToken = () => {
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        return user.token || null;
+      }
+    } catch (error) {
+      console.error('Error getting auth token:', error);
+    }
+    return null;
+  };
+
   // Funkcja wylogowania - powrót do trybu zwykłego użytkownika
   const logout = () => {
     setUser(null);
@@ -96,6 +160,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated, // true tylko gdy zalogowany jako admin
     login,
     logout,
+    changePassword,
     isAdmin: user?.role === 'admin', // true tylko gdy zalogowany jako admin
     isUser: !user // true gdy niezalogowany (zwykły użytkownik)
   };
