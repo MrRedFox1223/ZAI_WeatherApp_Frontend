@@ -44,14 +44,16 @@
 }
 
 .logout-button,
-.login-button {
+.login-button,
+.print-button {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
 }
 
 .logout-button:hover,
-.login-button:hover {
+.login-button:hover,
+.print-button:hover {
   background: rgba(255, 255, 255, 0.3);
   border-color: rgba(255, 255, 255, 0.5);
 }
@@ -179,3 +181,4 @@
     margin-right: 5px;
   }
 }
+

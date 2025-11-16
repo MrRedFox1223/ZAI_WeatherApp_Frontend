@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
+import './print.css';
 import 'primereact/resources/themes/lara-light-cyan/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
@@ -292,6 +293,11 @@ const AppContent = () => {
     });
   };
 
+  // Obsługa drukowania
+  const handlePrint = () => {
+    window.print();
+  };
+
   // Footer dialogu z zakresem dat
   const dateRangeDialogFooter = (
     <div>
@@ -317,6 +323,14 @@ const AppContent = () => {
         <div className="header-content">
           <h1>Weather Dashboard</h1>
           <div className="user-info">
+            <Button
+              label="Drukuj"
+              icon="pi pi-print"
+              onClick={handlePrint}
+              className="print-button"
+              severity="secondary"
+              outlined
+            />
             {isAdmin ? (
               <>
                 <span className="user-name">

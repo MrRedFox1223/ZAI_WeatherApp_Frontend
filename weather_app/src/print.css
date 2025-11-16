@@ -1,0 +1,519 @@
+/* Print Styles */
+@media print {
+  /* Ukryj elementy interfejsu użytkownika */
+  .print-button,
+  .logout-button,
+  .login-button,
+  .user-info,
+  .user-name,
+  .header-content > div:last-child,
+  .p-datatable-header,
+  .p-paginator,
+  .p-datatable-footer,
+  .admin-info,
+  .p-dialog,
+  .p-toast,
+  .p-confirm-dialog {
+    display: none !important;
+  }
+
+  /* Ukryj wszystkie przyciski */
+  button,
+  .p-button {
+    display: none !important;
+  }
+
+  /* Ukryj przyciski - użyj bardziej uniwersalnych selektorów */
+  .chart-section button,
+  .table-section button,
+  button.p-button {
+    display: none !important;
+  }
+
+  /* Ukryj kolumny z przyciskami - użyj nth-child dla kolumn Akcje i Edycja */
+  /* Kolumna Akcje to 5. kolumna, Edycja to 6. kolumna, przyciski edycji to 7. kolumna */
+  .p-datatable-tbody > tr > td:nth-child(5),
+  .p-datatable-thead > tr > th:nth-child(5),
+  .p-datatable-tbody > tr > td:nth-child(6),
+  .p-datatable-thead > tr > th:nth-child(6),
+  .p-datatable-tbody > tr > td:nth-child(7),
+  .p-datatable-thead > tr > th:nth-child(7) {
+    display: none !important;
+  }
+
+  /* Pokaż informacje o zakresie dat (tekst) */
+  .chart-section > div:last-child {
+    display: block !important;
+    margin-top: 0.5rem !important;
+    font-size: 10pt !important;
+    color: #666 !important;
+    text-align: center !important;
+  }
+
+  /* Upewnij się, że sekcja tabeli jest widoczna */
+  .table-section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    min-height: 200px !important;
+  }
+
+  /* Ustawienia strony */
+  @page {
+    margin: 1.5cm;
+    size: A4 landscape;
+  }
+
+  /* Ukryj tło i cienie */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .App {
+    background: white !important;
+  }
+
+  /* Usuń cienie i efekty hover */
+  .chart-section,
+  .table-section {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+
+  .chart-section:hover,
+  .table-section:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Upewnij się, że wykres jest widoczny */
+  .weather-chart {
+    height: auto !important;
+    min-height: 400px;
+  }
+
+  /* Upewnij się, że sekcja tabeli jest widoczna */
+  .table-section {
+    display: block !important;
+    visibility: visible !important;
+    page-break-inside: avoid;
+  }
+
+  .weather-table {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+  }
+
+  /* Wyświetl wszystkie wiersze tabeli */
+  .p-datatable {
+    display: table !important;
+    width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: collapse !important;
+    visibility: visible !important;
+  }
+
+  .p-datatable-table {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .p-datatable-thead {
+    display: table-header-group !important;
+  }
+
+  .p-datatable-tbody {
+    display: table-row-group !important;
+  }
+
+  .p-datatable-tbody > tr {
+    display: table-row !important;
+    page-break-inside: avoid;
+    visibility: visible !important;
+  }
+
+  .p-datatable-tbody > tr > td {
+    display: table-cell !important;
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+    visibility: visible !important;
+  }
+
+  .p-datatable-thead > tr {
+    display: table-row !important;
+  }
+
+  .p-datatable-thead > tr > th {
+    display: table-cell !important;
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+    background: #f5f5f5 !important;
+    font-weight: bold !important;
+    visibility: visible !important;
+  }
+
+  /* Ukryj paginację */
+  .p-paginator {
+    display: none !important;
+  }
+
+  /* Upewnij się, że tabela wyświetla wszystkie dane - wyłącz wszystkie ograniczenia */
+  .p-datatable-wrapper {
+    overflow: visible !important;
+    display: block !important;
+    visibility: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .p-datatable-scrollable-wrapper {
+    overflow: visible !important;
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .p-datatable-scrollable-body {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    display: block !important;
+  }
+
+  .p-datatable-scrollable-view {
+    overflow: visible !important;
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Wymuś wyświetlenie całej tabeli jako jednej struktury */
+  .p-datatable-scrollable-body-table,
+  .p-datatable-scrollable-header-table,
+  .p-datatable-table {
+    display: table !important;
+    width: 100% !important;
+    table-layout: auto !important;
+  }
+
+  .p-datatable-scrollable-body-table tbody,
+  .p-datatable-table tbody,
+  .p-datatable tbody {
+    display: table-row-group !important;
+  }
+
+  .p-datatable-scrollable-body-table tbody tr,
+  .p-datatable-table tbody tr,
+  .p-datatable tbody tr {
+    display: table-row !important;
+  }
+
+  .p-datatable-scrollable-body-table tbody tr td,
+  .p-datatable-table tbody tr td,
+  .p-datatable tbody tr td {
+    display: table-cell !important;
+  }
+
+  /* Najbardziej uniwersalne podejście - znajdź wszystkie tbody tr w całej sekcji tabeli */
+  .table-section tbody tr,
+  .table-section table tbody tr,
+  .table-section * table tbody tr,
+  .table-section * * tbody tr {
+    display: table-row !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .table-section tbody tr td,
+  .table-section table tbody tr td,
+  .table-section * table tbody tr td,
+  .table-section * * tbody tr td {
+    display: table-cell !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Upewnij się, że wszystkie wiersze są widoczne (wyłącz paginację) */
+  .p-datatable-tbody > tr[style*="display: none"] {
+    display: table-row !important;
+  }
+
+  /* Wyłącz wszystkie ukrycia związane z paginacją */
+  .p-datatable-tbody > tr {
+    display: table-row !important;
+    visibility: visible !important;
+  }
+
+  /* Upewnij się, że wszystkie elementy tabeli są widoczne */
+  .p-datatable * {
+    visibility: visible !important;
+  }
+
+  /* Wyjątek - ukryj tylko paginację i przyciski */
+  .p-datatable .p-paginator,
+  .p-datatable button,
+  .p-datatable .p-button {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Wymuś wyświetlenie wszystkich wierszy - bardzo agresywne podejście */
+  /* Nadpisz wszystkie możliwe inline styles ukrywające wiersze */
+  /* Użyj uniwersalnego selektora dla wszystkich wierszy w tabeli */
+  .p-datatable tbody tr,
+  .p-datatable-tbody tr,
+  .p-datatable-scrollable-body-table tbody tr,
+  .p-datatable-table tbody tr,
+  .p-datatable tbody tr[style*="display"],
+  .p-datatable-tbody tr[style*="display"],
+  .p-datatable-scrollable-body-table tbody tr[style*="display"],
+  .p-datatable-table tbody tr[style*="display"],
+  .p-datatable tbody tr[style*="display: none"],
+  .p-datatable-tbody tr[style*="display: none"],
+  .p-datatable-scrollable-body-table tbody tr[style*="display: none"],
+  .p-datatable-table tbody tr[style*="display: none"],
+  .p-datatable tbody tr[style*="display:none"],
+  .p-datatable-tbody tr[style*="display:none"],
+  .p-datatable-scrollable-body-table tbody tr[style*="display:none"],
+  .p-datatable-table tbody tr[style*="display:none"] {
+    display: table-row !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Wymuś wyświetlenie wszystkich komórek - nadpisz inline styles */
+  /* Użyj uniwersalnego selektora dla wszystkich komórek w tabeli */
+  .p-datatable tbody tr td,
+  .p-datatable-tbody tr td,
+  .p-datatable-scrollable-body-table tbody tr td,
+  .p-datatable-table tbody tr td,
+  .p-datatable tbody tr td[style*="display"],
+  .p-datatable-tbody tr td[style*="display"],
+  .p-datatable-scrollable-body-table tbody tr td[style*="display"],
+  .p-datatable-table tbody tr td[style*="display"],
+  .p-datatable tbody tr td[style*="display: none"],
+  .p-datatable-tbody tr td[style*="display: none"],
+  .p-datatable-scrollable-body-table tbody tr td[style*="display: none"],
+  .p-datatable-table tbody tr td[style*="display: none"],
+  .p-datatable tbody tr td[style*="display:none"],
+  .p-datatable-tbody tr td[style*="display:none"],
+  .p-datatable-scrollable-body-table tbody tr td[style*="display:none"],
+  .p-datatable-table tbody tr td[style*="display:none"] {
+    display: table-cell !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Wymuś wyświetlenie wszystkich nagłówków */
+  .p-datatable-thead tr th {
+    display: table-cell !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Uniwersalne podejście - wymuś wyświetlenie WSZYSTKICH wierszy w tabeli */
+  /* Użyj selektora potomka, który znajdzie wszystkie wiersze niezależnie od struktury */
+  .p-datatable tbody tr,
+  .p-datatable * tbody tr,
+  .p-datatable-wrapper tbody tr,
+  .p-datatable-wrapper * tbody tr,
+  .p-datatable-scrollable-wrapper tbody tr,
+  .p-datatable-scrollable-wrapper * tbody tr,
+  .p-datatable-scrollable-view tbody tr,
+  .p-datatable-scrollable-view * tbody tr,
+  .p-datatable-scrollable-body tbody tr,
+  .p-datatable-scrollable-body * tbody tr,
+  .weather-table tbody tr,
+  .weather-table * tbody tr,
+  .table-section tbody tr,
+  .table-section * tbody tr {
+    display: table-row !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+  }
+
+  /* Uniwersalne podejście - wymuś wyświetlenie WSZYSTKICH komórek */
+  .p-datatable tbody tr td,
+  .p-datatable * tbody tr td,
+  .p-datatable-wrapper tbody tr td,
+  .p-datatable-wrapper * tbody tr td,
+  .p-datatable-scrollable-wrapper tbody tr td,
+  .p-datatable-scrollable-wrapper * tbody tr td,
+  .p-datatable-scrollable-view tbody tr td,
+  .p-datatable-scrollable-view * tbody tr td,
+  .p-datatable-scrollable-body tbody tr td,
+  .p-datatable-scrollable-body * tbody tr td,
+  .weather-table tbody tr td,
+  .weather-table * tbody tr td,
+  .table-section tbody tr td,
+  .table-section * tbody tr td {
+    display: table-cell !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Upewnij się, że tabela nie jest ukryta przez overflow */
+  .p-datatable-scrollable,
+  .p-datatable-scrollable-body-table,
+  .p-datatable-scrollable-header-table,
+  .p-datatable-scrollable-footer-table {
+    display: table !important;
+    width: 100% !important;
+    visibility: visible !important;
+  }
+
+  /* Styl dla nagłówka (tylko tytuł) */
+  .app-header {
+    display: block !important;
+    background: white !important;
+    color: black !important;
+    padding: 1rem 0 !important;
+    box-shadow: none !important;
+    border-bottom: 2px solid #000 !important;
+  }
+
+  .app-header h1 {
+    margin: 0 !important;
+    font-size: 24pt !important;
+    text-shadow: none !important;
+    color: black !important;
+  }
+
+  /* Ukryj wszystkie elementy user-info */
+  .user-info {
+    display: none !important;
+  }
+
+  /* Upewnij się, że główna zawartość jest widoczna */
+  .app-main {
+    padding: 0 !important;
+    max-width: 100% !important;
+    display: block !important;
+  }
+
+  /* Wymuś wyświetlenie sekcji - bardzo agresywne podejście */
+  section.table-section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Wymuś wyświetlenie wszystkich elementów w sekcji tabeli */
+  section.table-section > * {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  /* Wymuś wyświetlenie tabeli - bardzo bezpośrednie */
+  .weather-table {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100px !important;
+  }
+
+  /* Dodaj odstępy między sekcjami */
+  .chart-section {
+    margin-bottom: 2rem !important;
+    page-break-after: auto;
+  }
+
+  .table-section {
+    page-break-before: auto;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Wymuś wyświetlenie całej struktury tabeli - bardziej agresywne podejście */
+  .weather-table,
+  .weather-table *,
+  .p-datatable,
+  .p-datatable *,
+  .p-datatable-wrapper,
+  .p-datatable-wrapper *,
+  .p-datatable-scrollable-wrapper,
+  .p-datatable-scrollable-wrapper *,
+  .p-datatable-scrollable-view,
+  .p-datatable-scrollable-view *,
+  .p-datatable-scrollable-body,
+  .p-datatable-scrollable-body *,
+  .p-datatable-table,
+  .p-datatable-table *,
+  .p-datatable-thead,
+  .p-datatable-thead *,
+  .p-datatable-tbody,
+  .p-datatable-tbody * {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Wymuś wyświetlenie jako tabela */
+  .p-datatable {
+    display: table !important;
+    width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: collapse !important;
+  }
+
+  .p-datatable-table {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .p-datatable-wrapper {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .p-datatable-scrollable-wrapper {
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .p-datatable-scrollable-view {
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .p-datatable-scrollable-body {
+    display: block !important;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  .p-datatable-thead {
+    display: table-header-group !important;
+  }
+
+  .p-datatable-tbody {
+    display: table-row-group !important;
+  }
+
+  /* Ukryj zakres dat jeśli jest wyświetlany jako tekst */
+  .chart-section > div:last-child {
+    display: block !important;
+    margin-top: 0.5rem !important;
+    font-size: 10pt !important;
+    color: #666 !important;
+  }
+}
+
