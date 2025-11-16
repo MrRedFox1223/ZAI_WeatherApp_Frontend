@@ -29,9 +29,16 @@ export const AuthProvider = ({ children }) => {
       if (!response.ok) {
         // Jeśli status nie jest OK, spróbuj pobrać komunikat błędu
         const errorData = await response.json().catch(() => ({}));
+        let errorMessage = errorData.detail || errorData.message || `Błąd logowania: ${response.status}`;
+        
+        // Tłumacz angielskie komunikaty błędów na polski
+        if (errorMessage.includes('Invalid username or password')) {
+          errorMessage = 'Niepoprawna nazwa użytkownika lub hasło';
+        }
+        
         return {
           success: false,
-          message: errorData.detail || errorData.message || `Błąd logowania: ${response.status}`,
+          message: errorMessage,
         };
       }
 
