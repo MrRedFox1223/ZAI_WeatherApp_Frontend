@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
@@ -12,6 +12,15 @@ const LoginDialog = ({ visible, onHide }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+
+  useEffect(() => {
+    if (visible) {
+      setUsername('');
+      setPassword('');
+      setError('');
+      setLoading(false);
+    }
+  }, [visible]);
 
   const handleLogin = async () => {
     if (!username || !password) {

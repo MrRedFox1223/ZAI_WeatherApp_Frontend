@@ -13,53 +13,50 @@ const ChangePasswordDialog = ({ visible, onHide }) => {
   const [loading, setLoading] = useState(false);
   const { changePassword } = useAuth();
 
-  // Czyszczenie stanu przy otwieraniu okna
+  const resetForm = () => {
+    setCurrentPassword('');
+    setNewPassword('');
+    setError('');
+    setSuccess('');
+    setLoading(false);
+  };
+
   useEffect(() => {
     if (visible) {
-      setCurrentPassword('');
-      setNewPassword('');
-      setError('');
-      setSuccess('');
-      setLoading(false);
+      resetForm();
     }
   }, [visible]);
 
-  const handleChangePassword = async () => {
+  const validateForm = () => {
     if (!currentPassword || !newPassword) {
       setError('Proszę wypełnić wszystkie pola');
-      setSuccess('');
-      return;
+      return false;
     }
-
     if (newPassword.length < 6) {
       setError('Nowe hasło musi mieć co najmniej 6 znaków');
-      setSuccess('');
-      return;
+      return false;
     }
+    return true;
+  };
 
+  const handleChangePassword = async () => {
     setError('');
     setSuccess('');
+    
+    if (!validateForm()) return;
+
     setLoading(true);
 
     try {
       const result = await changePassword(currentPassword, newPassword);
       if (result.success) {
-        setCurrentPassword('');
-        setNewPassword('');
-        setError('');
         setSuccess('Hasło zostało pomyślnie zmienione');
-        setTimeout(() => {
-          if (onHide) {
-            onHide();
-          }
-        }, 1500);
+        setTimeout(() => onHide?.(), 1500);
       } else {
         setError(result.message || 'Nie udało się zmienić hasła');
-        setSuccess('');
       }
     } catch (err) {
       setError('Wystąpił błąd podczas zmiany hasła');
-      setSuccess('');
     } finally {
       setLoading(false);
     }
@@ -72,13 +69,8 @@ const ChangePasswordDialog = ({ visible, onHide }) => {
   };
 
   const handleClose = () => {
-    setCurrentPassword('');
-    setNewPassword('');
-    setError('');
-    setSuccess('');
-    if (onHide) {
-      onHide();
-    }
+    resetForm();
+    onHide?.();
   };
 
   return (

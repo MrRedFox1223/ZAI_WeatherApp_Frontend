@@ -11,51 +11,56 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  // Domyślnie użytkownik nie jest zalogowany (zwykły użytkownik)
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Funkcja logowania - tylko dla administratora
+  const API_BASE_URL = 'http://localhost:8000';
+
+  const getAuthToken = () => {
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        return user.token || null;
+      }
+    } catch (error) {
+      console.error('Error getting auth token:', error);
+    }
+    return null;
+  };
+
   const login = async (username, password) => {
     try {
-      const response = await fetch('http://localhost:8000/login', {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
-        // Jeśli status nie jest OK, spróbuj pobrać komunikat błędu
         const errorData = await response.json().catch(() => ({}));
         let errorMessage = errorData.detail || errorData.message || `Błąd logowania: ${response.status}`;
         
-        // Tłumacz angielskie komunikaty błędów na polski
         if (errorMessage.includes('Invalid username or password')) {
           errorMessage = 'Niepoprawna nazwa użytkownika lub hasło';
         }
         
-        return {
-          success: false,
-          message: errorMessage,
-        };
+        return { success: false, message: errorMessage };
       }
 
       const userData = await response.json();
       
-      // Sprawdź czy użytkownik ma rolę admin
       if (userData.role === 'admin') {
         setUser(userData);
         setIsAuthenticated(true);
         localStorage.setItem('user', JSON.stringify(userData));
         return { success: true, user: userData };
-      } else {
-        return {
-          success: false,
-          message: 'Tylko administrator może się zalogować.',
-        };
       }
+      
+      return {
+        success: false,
+        message: 'Tylko administrator może się zalogować.',
+      };
     } catch (error) {
       console.error('Error during login:', error);
       return {
@@ -65,7 +70,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Funkcja zmiany hasła
   const changePassword = async (currentPassword, newPassword) => {
     try {
       const token = getAuthToken();
@@ -76,7 +80,7 @@ export const AuthProvider = ({ children }) => {
         };
       }
 
-      const response = await fetch('http://localhost:8000/change_password', {
+      const response = await fetch(`${API_BASE_URL}/change_password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,23 +97,14 @@ export const AuthProvider = ({ children }) => {
         const errorCode = errorData.code || errorData.error_code || response.status;
         let errorMessage = errorData.detail || errorData.message || `Błąd zmiany hasła: ${response.status}`;
         
-        // Tłumacz błędy na podstawie kodu błędu
-        switch (errorCode) {
-          case 401:
-            errorMessage = 'Niepoprawne aktualne hasło.';
-            break;
-          case 400:
-            errorMessage = 'Nowe hasło nie może być takie samo jak aktualne.';
-            break;
-          default:
-            // Jeśli nie ma kodu błędu, użyj oryginalnego komunikatu
-            break;
-        }
-        
-        return {
-          success: false,
-          message: errorMessage,
+        const errorMessages = {
+          401: 'Niepoprawne aktualne hasło.',
+          400: 'Nowe hasło nie może być takie samo jak aktualne.',
         };
+        
+        errorMessage = errorMessages[errorCode] || errorMessage;
+        
+        return { success: false, message: errorMessage };
       }
 
       return { success: true };
@@ -122,54 +117,37 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Funkcja pomocnicza do pobierania tokenu
-  const getAuthToken = () => {
-    try {
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        const user = JSON.parse(userData);
-        return user.token || null;
-      }
-    } catch (error) {
-      console.error('Error getting auth token:', error);
-    }
-    return null;
-  };
-
-  // Funkcja wylogowania - powrót do trybu zwykłego użytkownika
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('user');
   };
 
-  // Sprawdzenie czy administrator jest zalogowany przy starcie
   React.useEffect(() => {
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      try {
-        const userData = JSON.parse(savedUser);
-        // Tylko admin może być zalogowany
-        if (userData.role === 'admin') {
-          setUser(userData);
-          setIsAuthenticated(true);
-        } else {
-          localStorage.removeItem('user');
-        }
-      } catch (error) {
+    if (!savedUser) return;
+
+    try {
+      const userData = JSON.parse(savedUser);
+      if (userData.role === 'admin') {
+        setUser(userData);
+        setIsAuthenticated(true);
+      } else {
         localStorage.removeItem('user');
       }
+    } catch (error) {
+      localStorage.removeItem('user');
     }
   }, []);
 
   const value = {
     user,
-    isAuthenticated, // true tylko gdy zalogowany jako admin
+    isAuthenticated,
     login,
     logout,
     changePassword,
-    isAdmin: user?.role === 'admin', // true tylko gdy zalogowany jako admin
-    isUser: !user // true gdy niezalogowany (zwykły użytkownik)
+    isAdmin: user?.role === 'admin',
+    isUser: !user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
