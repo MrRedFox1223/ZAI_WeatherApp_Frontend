@@ -90,13 +90,20 @@ export const AuthProvider = ({ children }) => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        const errorCode = errorData.code || errorData.error_code || response.status;
         let errorMessage = errorData.detail || errorData.message || `Błąd zmiany hasła: ${response.status}`;
         
-        // Tłumacz angielskie komunikaty błędów na polski
-        if (errorMessage.includes('Invalid password') || errorMessage.includes('Current password is incorrect')) {
-          errorMessage = 'Niepoprawne aktualne hasło';
-        } else if (errorMessage.includes('New password') && errorMessage.includes('same')) {
-          errorMessage = 'Nowe hasło musi być inne niż aktualne';
+        // Tłumacz błędy na podstawie kodu błędu
+        switch (errorCode) {
+          case 401:
+            errorMessage = 'Niepoprawne aktualne hasło.';
+            break;
+          case 400:
+            errorMessage = 'Nowe hasło nie może być takie samo jak aktualne.';
+            break;
+          default:
+            // Jeśli nie ma kodu błędu, użyj oryginalnego komunikatu
+            break;
         }
         
         return {
@@ -107,7 +114,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (error) {
-      console.error('Error during password change:', error);
+      console.error('Wystąpił błąd:', error);
       return {
         success: false,
         message: `Wystąpił błąd podczas zmiany hasła: ${error.message}`,

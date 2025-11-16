@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
@@ -12,6 +12,17 @@ const ChangePasswordDialog = ({ visible, onHide }) => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const { changePassword } = useAuth();
+
+  // Czyszczenie stanu przy otwieraniu okna
+  useEffect(() => {
+    if (visible) {
+      setCurrentPassword('');
+      setNewPassword('');
+      setError('');
+      setSuccess('');
+      setLoading(false);
+    }
+  }, [visible]);
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword) {
