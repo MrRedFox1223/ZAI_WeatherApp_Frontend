@@ -44,8 +44,11 @@ const WeatherChart = memo(({ data }) => {
       backgroundColor: cityColors[index % cityColors.length].background,
       tension: 0.4,
       fill: false,
+      spanGaps: true, // Łącz linię przez brakujące dane (null wartości) - linia łączy punkty niezależnie od przerw czasowych
       pointRadius: 4,
-      pointHoverRadius: 6
+      pointHoverRadius: 6,
+      pointBackgroundColor: cityColors[index % cityColors.length].border,
+      showLine: true // Upewnij się, że linia jest wyświetlana
     }));
 
     // Format dates for display
