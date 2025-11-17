@@ -9,12 +9,11 @@ import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useAuth } from '../context/AuthContext';
-import { flatWeatherData } from '../data/weatherData';
 import { addLocale } from 'primereact/api';
 
 const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHighlightPoint, highlightedPoint }) => {
   const { isAdmin } = useAuth();
-  const [data, setData] = useState(externalData || [...flatWeatherData]);
+  const [data, setData] = useState(externalData || []);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newItem, setNewItem] = useState({
     city_name: '',
