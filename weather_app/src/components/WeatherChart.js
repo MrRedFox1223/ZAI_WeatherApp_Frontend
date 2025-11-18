@@ -1,7 +1,6 @@
 import React, { useMemo, memo } from 'react';
 import { Chart } from 'primereact/chart';
 
-// Colors for each city line - unique colors for 10 cities
 const cityColors = [
   { border: '#FF6384', background: 'rgba(255, 99, 132, 0.2)' }, // New York - Red/Pink
   { border: '#36A2EB', background: 'rgba(54, 162, 235, 0.2)' }, // London - Blue
@@ -17,17 +16,14 @@ const cityColors = [
 
 const WeatherChart = memo(({ data, highlightedPoint }) => {
 
-  // Memoize chart data to prevent unnecessary recalculations
   const chartData = useMemo(() => {
     if (!data || data.length === 0) {
       return { labels: [], datasets: [] };
     }
 
-    // Get unique dates and cities
     const dates = [...new Set(data.map(item => item.date))].sort();
     const cities = [...new Set(data.map(item => item.city_name))];
 
-    // Group data by city
     const cityDataMap = {};
     cities.forEach(city => {
       cityDataMap[city] = dates.map(date => {
@@ -36,51 +32,48 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
       });
     });
 
-    // Create datasets for each city
     const datasets = cities.map((city, index) => {
       const cityColor = cityColors[index % cityColors.length];
       const isHighlightedCity = highlightedPoint && highlightedPoint.city_name === city;
       
-      // Przygotuj tablice kolorów i rozmiarów dla każdego punktu
       const pointColors = dates.map(date => {
         if (isHighlightedCity && highlightedPoint && date === highlightedPoint.date) {
-          return '#FFD700'; // Złoty kolor dla podświetlonego punktu
+          return '#FFD700';
         }
-        return cityColor.border; // Standardowy kolor
+        return cityColor.border;
       });
       
       const pointRadii = dates.map(date => {
         if (isHighlightedCity && highlightedPoint && date === highlightedPoint.date) {
-          return 10; // Większy rozmiar dla podświetlonego punktu
+          return 10;
         }
-        return 4; // Standardowy rozmiar
+        return 4;
       });
       
       const pointBorderWidths = dates.map(date => {
         if (isHighlightedCity && highlightedPoint && date === highlightedPoint.date) {
-          return 3; // Grubsza ramka dla podświetlonego punktu
+          return 3;
         }
-        return 1; // Standardowa grubość
+        return 1;
       });
       
       return {
         label: city,
         data: cityDataMap[city],
-        borderColor: cityColor.border, // Kolor linii - używany przez legendę, nie zmienia się
-        backgroundColor: cityColor.background, // Kolor tła - używany przez legendę, nie zmienia się
+        borderColor: cityColor.border,
+        backgroundColor: cityColor.background,
         tension: 0.4,
         fill: false,
-        spanGaps: true, // Łącz linię przez brakujące dane (null wartości) - linia łączy punkty niezależnie od przerw czasowych
-        pointRadius: pointRadii, // Tablica rozmiarów punktów
+        spanGaps: true,
+        pointRadius: pointRadii,
         pointHoverRadius: 6,
-        pointBackgroundColor: pointColors, // Tablica kolorów tła punktów - nie wpływa na legendę
-        pointBorderColor: pointColors, // Tablica kolorów ramek punktów - nie wpływa na legendę
-        pointBorderWidth: pointBorderWidths, // Tablica grubości ramek punktów
-        showLine: true // Upewnij się, że linia jest wyświetlana
+        pointBackgroundColor: pointColors,
+        pointBorderColor: pointColors,
+        pointBorderWidth: pointBorderWidths,
+        showLine: true
       };
     });
 
-    // Format dates for display - format: dzień.miesiąc.rok
     const formattedDates = dates.map(date => {
       const d = new Date(date);
       return d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -92,7 +85,6 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
     };
   }, [data, highlightedPoint]);
 
-  // Memoize chart options to prevent unnecessary re-renders
   const chartOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
@@ -164,68 +156,55 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
     </div>
   );
 }, (prevProps, nextProps) => {
-  // Custom comparison function to prevent re-renders when data hasn't actually changed
   const prevData = prevProps.data || [];
   const nextData = nextProps.data || [];
   const prevHighlighted = prevProps.highlightedPoint;
   const nextHighlighted = nextProps.highlightedPoint;
   
-  // If highlighted point changed, allow re-render
   if (prevHighlighted !== nextHighlighted) {
-    // Check if both are null/undefined
     if ((!prevHighlighted && !nextHighlighted) || 
         (prevHighlighted && nextHighlighted && 
          prevHighlighted.id === nextHighlighted.id &&
          prevHighlighted.city_name === nextHighlighted.city_name &&
          prevHighlighted.date === nextHighlighted.date)) {
-      // Same highlight state, continue with data comparison
     } else {
-      return false; // Highlight changed, allow re-render
+      return false;
     }
   }
   
-  // If references are the same, data hasn't changed
   if (prevData === nextData) {
-    return true; // Prevent re-render
+    return true;
   }
   
-  // If lengths differ, data has changed
   if (prevData.length !== nextData.length) {
-    return false; // Data changed, allow re-render
+    return false;
   }
   
-  // Create maps by ID for efficient comparison (order-independent)
   const prevMap = new Map(prevData.map(item => [item.id, item]));
   const nextMap = new Map(nextData.map(item => [item.id, item]));
   
-  // Check if all items with same IDs have same properties
   for (const [id, prevItem] of prevMap) {
     const nextItem = nextMap.get(id);
     
-    // If item doesn't exist in next data, data changed
     if (!nextItem) {
-      return false; // Data changed, allow re-render
+      return false;
     }
     
-    // If references are the same, item hasn't changed
     if (prevItem === nextItem) {
       continue;
     }
     
-    // Compare key properties that affect chart display
     if (prevItem.date !== nextItem.date ||
         prevItem.city_name !== nextItem.city_name ||
         prevItem.temperature !== nextItem.temperature) {
-      return false; // Data changed, allow re-render
+      return false;
     }
   }
   
-  // Check if there are any items in nextData that don't exist in prevData
   if (prevMap.size !== nextMap.size) {
-    return false; // Data changed, allow re-render
+    return false;
   }
   
-  // Data is the same (same IDs with same properties), prevent re-render
   return true;
 });
 

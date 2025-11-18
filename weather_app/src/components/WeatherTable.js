@@ -22,14 +22,12 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
   });
   const toast = React.useRef(null);
 
-  // Synchronizuj dane gdy zmienią się z zewnątrz
   React.useEffect(() => {
     if (externalData) {
       setData(externalData);
     }
   }, [externalData]);
 
-  // Walidacja temperatury
   const validateTemperature = (value) => {
     if (value === null || value === undefined) {
       return { valid: false, message: 'Temperatura jest wymagana' };
@@ -40,14 +38,13 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
     return { valid: true };
   };
 
-  // Walidacja daty
   const validateDate = (date) => {
     if (!date) {
       return { valid: false, message: 'Data jest wymagana' };
     }
     const dateObj = new Date(date);
-    const minDate = new Date(1900, 0, 1); // 1 stycznia 1900
-    const maxDate = new Date(2100, 11, 31); // 31 grudnia 2100
+    const minDate = new Date(1900, 0, 1);
+    const maxDate = new Date(2100, 11, 31);
     
     if (dateObj < minDate || dateObj > maxDate) {
       return { valid: false, message: 'Data musi być w zakresie od stycznia 1900 do grudnia 2100' };
@@ -55,17 +52,14 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
     return { valid: true };
   };
 
-  // Format temperatury
   const temperatureTemplate = (rowData) => {
     return `${rowData.temperature}°C`;
   };
 
-  // Format daty
   const dateTemplate = (rowData) => {
     return new Date(rowData.date).toLocaleDateString('pl-PL');
   };
 
-  // Funkcja konwertująca datę na string YYYY-MM-DD bez przesunięcia czasowego
   const formatDateToString = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -73,7 +67,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
     return `${year}-${month}-${day}`;
   };
 
-  // Edytor dla nazwy miasta
   const cityEditor = (options) => {
     return (
       <InputText
@@ -85,7 +78,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
     );
   };
 
-  // Edytor dla temperatury
   const temperatureEditor = (options) => {
     return (
       <InputNumber
@@ -101,7 +93,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
     );
   };
 
-  // Edytor dla daty
   const dateEditor = (options) => {
     const dateValue = options.value ? new Date(options.value) : null;
     const minDate = new Date(1900, 0, 1);
@@ -126,7 +117,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
         value={dateValue}
         onChange={(e) => {
           if (e.value) {
-            // Użyj lokalnej daty zamiast UTC, aby uniknąć przesunięcia o jeden dzień
             const dateStr = formatDateToString(e.value);
             options.editorCallback(dateStr);
           } else {
@@ -147,21 +137,15 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
     );
   };
 
-  // Obsługa rozpoczęcia edycji wiersza
   const onRowEditInit = (e) => {
-    // Edycja rozpoczęta
   };
 
-  // Obsługa anulowania edycji wiersza
   const onRowEditCancel = (e) => {
-    // Edycja anulowana
   };
 
-  // Obsługa zapisywania edycji wiersza
   const onRowEditSave = (e) => {
     const { newData, index } = e;
     
-    // Walidacja temperatury
     const tempValidation = validateTemperature(newData.temperature);
     if (!tempValidation.valid) {
       toast.current.show({
@@ -170,12 +154,10 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
         detail: tempValidation.message,
         life: 3000
       });
-      // Zapobiegaj zapisowi przy błędzie walidacji
       e.preventDefault();
       return;
     }
 
-    // Walidacja daty
     const dateValidation = validateDate(newData.date);
     if (!dateValidation.valid) {
       toast.current.show({
@@ -184,12 +166,10 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
         detail: dateValidation.message,
         life: 3000
       });
-      // Zapobiegaj zapisowi przy błędzie walidacji
       e.preventDefault();
       return;
     }
 
-    // Walidacja nazwy miasta
     if (!newData.city_name || newData.city_name.trim() === '') {
       toast.current.show({
         severity: 'error',
@@ -197,23 +177,19 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
         detail: 'Nazwa miasta jest wymagana',
         life: 3000
       });
-      // Zapobiegaj zapisowi przy błędzie walidacji
       e.preventDefault();
       return;
     }
 
-    // Aktualizacja danych lokalnie
     const newDataArray = [...data];
     newDataArray[index] = { ...newData };
     setData(newDataArray);
 
-    // Wywołanie callbacka z tylko zaktualizowanym obiektem (do wysłania do API)
     if (onDataChange) {
       onDataChange(newData);
     }
   };
 
-  // Obsługa dodawania nowego elementu
   const handleAddClick = () => {
     setNewItem({
       city_name: '',
@@ -224,7 +200,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
   };
 
   const handleAddSubmit = () => {
-    // Walidacja
     if (!newItem.city_name || newItem.city_name.trim() === '') {
       toast.current.show({
         severity: 'error',
@@ -267,7 +242,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
       return;
     }
 
-    // Wywołaj callback
     if (onAdd) {
       onAdd({
         city_name: newItem.city_name.trim(),
@@ -279,7 +253,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
     setShowAddDialog(false);
   };
 
-  // Obsługa usuwania elementu
   const handleDeleteClick = (rowData) => {
     confirmDialog({
       message: `Czy na pewno chcesz usunąć wpis dla miasta "${rowData.city_name}" z datą ${new Date(rowData.date).toLocaleDateString('pl-PL')}?`,
@@ -293,7 +266,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
     });
   };
 
-  // Przycisk podświetlania dla wiersza (dostępny dla wszystkich)
   const highlightActionTemplate = (rowData) => {
     const isHighlighted = highlightedPoint && 
       highlightedPoint.id === rowData.id &&
@@ -311,7 +283,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
     );
   };
 
-  // Przycisk akcji (usuwanie) dla wiersza - tylko dla adminów
   const editActionTemplate = (rowData) => {
     if (!isAdmin) return null;
     
@@ -409,7 +380,6 @@ const WeatherTable = ({ data: externalData, onDataChange, onAdd, onDelete, onHig
           )}
       </DataTable>
 
-      {/* Dialog do dodawania nowych danych */}
       <Dialog
         header="Dodaj nowe dane"
         visible={showAddDialog}

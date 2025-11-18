@@ -25,10 +25,9 @@ const AppContent = () => {
   const [showDateRangeDialog, setShowDateRangeDialog] = useState(false);
   const [dateRange, setDateRange] = useState(null);
   const [tempDateRange, setTempDateRange] = useState(null);
-  const [highlightedPoint, setHighlightedPoint] = useState(null); // { id, city_name, date }
+  const [highlightedPoint, setHighlightedPoint] = useState(null);
   const toast = React.useRef(null);
 
-  // Dodaj polską lokalizację dla kalendarza
   useEffect(() => {
     addLocale('pl', {
       firstDayOfWeek: 1,
@@ -44,12 +43,10 @@ const AppContent = () => {
     });
   }, []);
 
-  // Załaduj dane przy starcie (dla wszystkich użytkowników)
   useEffect(() => {
     loadWeatherData();
   }, []);
 
-  // Funkcja konwertująca datę na string YYYY-MM-DD
   const formatDateToString = (date) => {
     if (!date) return null;
     const year = date.getFullYear();
@@ -58,7 +55,6 @@ const AppContent = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // Filtrowanie danych według zakresu dat (lokalnie)
   const filteredWeatherData = useMemo(() => {
     if (!dateRange || !dateRange[0] || !dateRange[1]) {
       return weatherData;
@@ -72,7 +68,6 @@ const AppContent = () => {
     });
   }, [weatherData, dateRange]);
 
-  // Funkcja do ładowania danych z API
   const loadWeatherData = async () => {
     setLoading(true);
     const result = await fetchWeatherData();
@@ -86,29 +81,24 @@ const AppContent = () => {
         detail: `Nie udało się załadować danych: ${result.error}`,
         life: 5000
       });
-      // W przypadku błędu, ustaw pustą tablicę
       setWeatherData([]);
     }
     setLoading(false);
   };
 
-  // Obsługa zmiany danych z tabeli
   const handleDataChange = async (updatedItem) => {
     if (!isAdmin) {
       return;
     }
 
-    // Zapisz poprzednią wartość na wypadek błędu
     const previousItem = weatherData.find(item => item.id === updatedItem.id);
     
-    // Aktualizuj lokalnie (optimistic update)
     setWeatherData(prevData => 
       prevData.map(item => 
         item.id === updatedItem.id ? updatedItem : item
       )
     );
 
-    // Wysyłamy tylko zaktualizowany obiekt do API
     const result = await updateWeatherItem(updatedItem);
     
     if (result.success) {
@@ -119,7 +109,6 @@ const AppContent = () => {
         life: 2000
       });
     } else {
-      // Cofnij zmiany w przypadku błędu
       if (previousItem) {
         setWeatherData(prevData => 
           prevData.map(item => 
@@ -137,7 +126,6 @@ const AppContent = () => {
     }
   };
 
-  // Obsługa dodawania nowych danych
   const handleAdd = async (newItem) => {
     if (!isAdmin) {
       return;
@@ -146,7 +134,6 @@ const AppContent = () => {
     const result = await createWeatherItem(newItem);
     
     if (result.success) {
-      // Dodaj nowy element do lokalnego stanu
       setWeatherData(prevData => [...prevData, result.data]);
       
       toast.current?.show({
@@ -165,16 +152,13 @@ const AppContent = () => {
     }
   };
 
-  // Obsługa usuwania danych
   const handleDelete = async (id) => {
     if (!isAdmin) {
       return;
     }
 
-    // Zapisz element do usunięcia na wypadek błędu
     const itemToDelete = weatherData.find(item => item.id === id);
     
-    // Usuń lokalnie (optimistic update)
     setWeatherData(prevData => prevData.filter(item => item.id !== id));
 
     const result = await deleteWeatherItem(id);
@@ -187,7 +171,6 @@ const AppContent = () => {
         life: 2000
       });
     } else {
-      // Przywróć element w przypadku błędu
       if (itemToDelete) {
         setWeatherData(prevData => [...prevData, itemToDelete].sort((a, b) => a.id - b.id));
       }
@@ -214,19 +197,16 @@ const AppContent = () => {
     setShowLogin(false);
   };
 
-  // Obsługa otwierania dialogu wyboru zakresu dat
   const handleOpenDateRangeDialog = () => {
     setTempDateRange(dateRange);
     setShowDateRangeDialog(true);
   };
 
-  // Obsługa zamykania dialogu bez zapisywania
   const handleCloseDateRangeDialog = () => {
     setTempDateRange(null);
     setShowDateRangeDialog(false);
   };
 
-  // Walidacja zakresu dat
   const validateDateRange = (range) => {
     if (!range || !range[0] || !range[1]) {
       return { valid: false, message: 'Proszę wybrać obie daty' };
@@ -239,7 +219,6 @@ const AppContent = () => {
     return { valid: true };
   };
 
-  // Obsługa akceptacji zakresu dat
   const handleApplyDateRange = () => {
     const validation = validateDateRange(tempDateRange);
     
@@ -264,7 +243,6 @@ const AppContent = () => {
     });
   };
 
-  // Obsługa resetowania zakresu dat
   const handleResetDateRange = () => {
     setDateRange(null);
     toast.current?.show({
@@ -275,18 +253,15 @@ const AppContent = () => {
     });
   };
 
-  // Obsługa podświetlania punktu na wykresie (toggle)
   const handleHighlightPoint = (item) => {
     setHighlightedPoint(prevHighlighted => {
-      // Jeśli kliknięto ten sam punkt, wyłącz podświetlenie
       if (prevHighlighted && 
           prevHighlighted.id === item.id &&
           prevHighlighted.city_name === item.city_name &&
           prevHighlighted.date === item.date) {
-        return null; // Wyłącz podświetlenie
+        return null;
       }
       
-      // Włącz podświetlenie dla nowego punktu (stare automatycznie się wyłączy)
       return {
         id: item.id,
         city_name: item.city_name,
@@ -295,12 +270,10 @@ const AppContent = () => {
     });
   };
 
-  // Obsługa drukowania
   const handlePrint = () => {
     window.print();
   };
 
-  // Footer dialogu z zakresem dat
   const dateRangeDialogFooter = (
     <div>
       <Button 
