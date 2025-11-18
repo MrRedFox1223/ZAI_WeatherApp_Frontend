@@ -2,16 +2,16 @@ import React, { useMemo, memo } from 'react';
 import { Chart } from 'primereact/chart';
 
 const cityColors = [
-  { border: '#FF6384', background: 'rgba(255, 99, 132, 0.2)' }, // New York - Red/Pink
-  { border: '#36A2EB', background: 'rgba(54, 162, 235, 0.2)' }, // London - Blue
-  { border: '#FFCE56', background: 'rgba(255, 206, 86, 0.2)' }, // Tokyo - Yellow
-  { border: '#4BC0C0', background: 'rgba(75, 192, 192, 0.2)' }, // Paris - Teal/Cyan
-  { border: '#9966FF', background: 'rgba(153, 102, 255, 0.2)' }, // Sydney - Purple
-  { border: '#FF9F40', background: 'rgba(255, 159, 64, 0.2)' }, // Berlin - Orange
-  { border: '#C9CBCF', background: 'rgba(201, 203, 207, 0.2)' }, // Moscow - Gray
-  { border: '#50C878', background: 'rgba(80, 200, 120, 0.2)' }, // Dubai - Green
-  { border: '#E91E63', background: 'rgba(233, 30, 99, 0.2)' }, // Toronto - Magenta/Pink
-  { border: '#00BCD4', background: 'rgba(0, 188, 212, 0.2)' }  // Barcelona - Cyan
+  { border: '#FF6384', background: 'rgba(255, 99, 132, 0.2)' }, 
+  { border: '#36A2EB', background: 'rgba(54, 162, 235, 0.2)' }, 
+  { border: '#FFCE56', background: 'rgba(255, 206, 86, 0.2)' }, 
+  { border: '#4BC0C0', background: 'rgba(75, 192, 192, 0.2)' }, 
+  { border: '#9966FF', background: 'rgba(153, 102, 255, 0.2)' }, 
+  { border: '#FF9F40', background: 'rgba(255, 159, 64, 0.2)' }, 
+  { border: '#C9CBCF', background: 'rgba(201, 203, 207, 0.2)' }, 
+  { border: '#50C878', background: 'rgba(80, 200, 120, 0.2)' }, 
+  { border: '#E91E63', background: 'rgba(233, 30, 99, 0.2)' }, 
+  { border: '#00BCD4', background: 'rgba(0, 188, 212, 0.2)' }  
 ];
 
 const WeatherChart = memo(({ data, highlightedPoint }) => {
