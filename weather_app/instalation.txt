@@ -1,0 +1,222 @@
+================================================================================
+INSTRUKCJA INSTALACJI I URUCHOMIENIA WEATHER APP
+================================================================================
+
+Ten dokument zawiera krok po kroku instrukcje instalacji i uruchomienia aplikacji
+Weather App na nowym komputerze.
+
+================================================================================
+WYMAGANIA WSTĘPNE
+================================================================================
+
+1. Node.js (wersja 14.0 lub nowsza)
+   - Pobierz z: https://nodejs.org/
+   - Zainstaluj używając domyślnych ustawień
+   - Node.js automatycznie zainstaluje również npm (Node Package Manager)
+
+2. Git (opcjonalnie, jeśli projekt pochodzi z repozytorium)
+   - Pobierz z: https://git-scm.com/downloads
+
+3. Edytor kodu (opcjonalnie, zalecany: Visual Studio Code)
+   - Pobierz z: https://code.visualstudio.com/
+
+================================================================================
+KROK 1: POBRANIE KODU ŹRÓDŁOWEGO
+================================================================================
+
+Opcja A - Jeśli projekt jest w repozytorium Git:
+  1. Otwórz terminal/linie poleceń
+  2. Przejdź do katalogu, w którym chcesz umieścić projekt
+  3. Wykonaj komendę:
+     git clone [URL_REPOZYTORIUM]
+  4. Przejdź do utworzonego katalogu:
+     cd ZAI_WeatherApp_Frontend
+
+Opcja B - Jeśli masz projekt jako archiwum ZIP:
+  1. Rozpakuj archiwum do wybranego katalogu
+  2. Otwórz terminal/linie poleceń
+  3. Przejdź do katalogu z projektem:
+     cd [ŚCIEŻKA_DO_PROJEKTU]/ZAI_WeatherApp_Frontend
+
+================================================================================
+KROK 2: PRZEJŚCIE DO KATALOGU PROJEKTU
+================================================================================
+
+W terminalu wykonaj komendę:
+  cd weather_app
+
+Upewnij się, że znajdujesz się w katalogu, który zawiera plik package.json.
+
+================================================================================
+KROK 3: WERYFIKACJA INSTALACJI NODE.JS I NPM
+================================================================================
+
+Sprawdź, czy Node.js i npm są poprawnie zainstalowane:
+
+  node --version
+  npm --version
+
+Oba polecenia powinny wyświetlić numery wersji. Jeśli nie, przeinstaluj Node.js.
+
+================================================================================
+KROK 4: INSTALACJA ZALEŻNOŚCI PROJEKTU
+================================================================================
+
+Zainstaluj wszystkie wymagane biblioteki i zależności projektu:
+
+  npm install
+
+Proces instalacji może potrwać kilka minut w zależności od prędkości internetu.
+
+UWAGA: 
+- Jeśli pojawi się błąd związany z uprawnieniami (permission error), spróbuj:
+  npm install --legacy-peer-deps
+
+- Na systemach Linux/Mac może być potrzebne użycie sudo (nie zalecane):
+  sudo npm install
+
+- Jeśli używasz Yarn zamiast npm:
+  yarn install
+
+================================================================================
+KROK 5: KONFIGURACJA ZMIENNYCH ŚRODOWISKOWYCH (OPCJONALNIE)
+================================================================================
+
+Aplikacja używa domyślnego URL API: http://localhost:8000
+
+Jeśli chcesz użyć innego adresu API:
+
+1. W katalogu weather_app utwórz plik .env
+2. Dodaj do niego:
+   REACT_APP_API_URL=http://twoj-adres-api:port
+
+Przykład:
+   REACT_APP_API_URL=http://localhost:8000
+   lub
+   REACT_APP_API_URL=https://api.example.com
+
+UWAGA: 
+- Zmienne środowiskowe w React muszą zaczynać się od REACT_APP_
+- Po zmianie zmiennych środowiskowych konieczne jest ponowne uruchomienie aplikacji
+- Upewnij się, że serwer API jest uruchomiony i dostępny pod podanym adresem
+
+================================================================================
+KROK 6: URUCHOMIENIE APLIKACJI W TRYBIE DEWELOPERSKIM
+================================================================================
+
+Wykonaj komendę:
+
+  npm start
+
+Aplikacja zostanie uruchomiona i automatycznie otworzy się w przeglądarce
+pod adresem: http://localhost:3000
+
+Jeśli przeglądarka nie otworzy się automatycznie, otwórz ją ręcznie i przejdź do:
+  http://localhost:3000
+
+CHARAKTERYSTYKA TRYBU DEWELOPERSKIEGO:
+- Strona automatycznie przeładowuje się po zmianach w kodzie (Hot Reload)
+- Błędy wyświetlane są w konsoli przeglądarki
+- Tryb ten nie jest zoptymalizowany pod kątem wydajności
+
+Aby zatrzymać serwer deweloperski, naciśnij: Ctrl + C
+
+================================================================================
+KROK 7: BUDOWANIE APLIKACJI DO PRODUKCJI (OPCJONALNIE)
+================================================================================
+
+Aby stworzyć zoptymalizowaną wersję aplikacji do wdrożenia:
+
+  npm run build
+
+Proces budowania utworzy folder "build" z zoptymalizowanymi plikami aplikacji.
+
+Do uruchomienia zbudowanej wersji potrzebny jest serwer statyczny, np.:
+
+  npm install -g serve
+  serve -s build
+
+Aplikacja będzie dostępna pod adresem pokazanym w konsoli (zwykle http://localhost:5000).
+
+================================================================================
+ROZWIĄZYWANIE PROBLEMÓW
+================================================================================
+
+PROBLEM: "npm install" kończy się błędem
+ROZWIĄZANIE:
+  1. Usuń folder node_modules (jeśli istnieje):
+     rm -rf node_modules     (Linux/Mac)
+     rmdir /s node_modules   (Windows)
+  
+  2. Usuń plik package-lock.json (jeśli istnieje):
+     rm package-lock.json    (Linux/Mac)
+     del package-lock.json   (Windows)
+  
+  3. Wyczyść cache npm:
+     npm cache clean --force
+  
+  4. Spróbuj ponownie:
+     npm install
+
+PROBLEM: Port 3000 jest już zajęty
+ROZWIĄZANIE:
+  - Zmień port w pliku .env:
+    PORT=3001
+  - Lub zatrzymaj proces używający portu 3000
+
+PROBLEM: Błędy związane z modułami (modules not found)
+ROZWIĄZANIE:
+  1. Usuń node_modules i package-lock.json
+  2. Wykonaj: npm install --legacy-peer-deps
+  3. Jeśli problem nadal występuje, sprawdź wersję Node.js (powinna być >= 14.0)
+
+PROBLEM: Aplikacja nie łączy się z API
+ROZWIĄZANIE:
+  1. Sprawdź, czy serwer API jest uruchomiony
+  2. Sprawdź zmienną REACT_APP_API_URL w pliku .env
+  3. Sprawdź w konsoli przeglądarki (F12) czy nie ma błędów CORS
+  4. Upewnij się, że adres API jest poprawny i dostępny
+
+PROBLEM: Błędy podczas uruchamiania "npm start"
+ROZWIĄZANIE:
+  1. Sprawdź wersję Node.js: node --version
+  2. Zaktualizuj Node.js do najnowszej wersji LTS
+  3. Usuń node_modules i wykonaj ponownie npm install
+  4. Sprawdź, czy wszystkie pliki projektu są obecne
+
+================================================================================
+DODATKOWE INFORMACJE
+================================================================================
+
+DOSTĘPNE KOMENDY:
+  npm start       - Uruchamia aplikację w trybie deweloperskim
+  npm test        - Uruchamia testy aplikacji
+  npm run build   - Buduje aplikację do produkcji
+  npm run eject   - Uwaga: Nieodwracalna operacja - eksportuje konfigurację
+
+STRUKTURA PROJEKTU:
+  /public         - Pliki statyczne (HTML, ikony, manifest.json)
+  /src            - Kod źródłowy aplikacji React
+    /components   - Komponenty React
+    /context      - Konteksty React (np. AuthContext)
+    /services     - Serwisy API
+  /node_modules   - Zainstalowane zależności (nie commituj do git)
+
+PRZYDATNE LINKI:
+  - Dokumentacja React: https://reactjs.org/docs/getting-started.html
+  - Create React App: https://create-react-app.dev/
+  - Node.js: https://nodejs.org/en/docs/
+
+================================================================================
+WERYFIKACJA POPRAWNEJ INSTALACJI
+================================================================================
+
+Po wykonaniu wszystkich kroków aplikacja powinna:
+✓ Otworzyć się w przeglądarce pod adresem http://localhost:3000
+✓ Wyświetlić interfejs aplikacji Weather App
+✓ Nie wyświetlać błędów w konsoli przeglądarki (F12)
+
+Jeśli wszystkie powyższe punkty są spełnione, instalacja zakończyła się sukcesem!
+
+================================================================================
+
