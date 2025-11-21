@@ -1,8 +1,5 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
-/**
- * Pobiera token JWT z localStorage
- */
 const getAuthToken = () => {
   try {
     const userData = localStorage.getItem('user');
@@ -16,9 +13,6 @@ const getAuthToken = () => {
   return null;
 };
 
-/**
- * Pobiera listę danych pogodowych z API
- */
 export const fetchWeatherData = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/weather`, {
@@ -40,10 +34,6 @@ export const fetchWeatherData = async () => {
   }
 };
 
-/**
- * Aktualizuje pojedynczy obiekt danych pogodowych przez API
- * @param {Object} weatherItem - Obiekt do aktualizacji (zawiera id, city_name, date, temperature)
- */
 export const updateWeatherItem = async (weatherItem) => {
   try {
     const token = getAuthToken();
@@ -73,10 +63,6 @@ export const updateWeatherItem = async (weatherItem) => {
   }
 };
 
-/**
- * Dodaje nowy obiekt danych pogodowych przez API
- * @param {Object} weatherItem - Obiekt do dodania (zawiera city_name, date, temperature)
- */
 export const createWeatherItem = async (weatherItem) => {
   try {
     const token = getAuthToken();
@@ -106,10 +92,6 @@ export const createWeatherItem = async (weatherItem) => {
   }
 };
 
-/**
- * Usuwa obiekt danych pogodowych przez API
- * @param {number} id - ID obiektu do usunięcia
- */
 export const deleteWeatherItem = async (id) => {
   try {
     const token = getAuthToken();

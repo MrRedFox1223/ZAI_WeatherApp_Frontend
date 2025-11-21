@@ -9,9 +9,8 @@ const cityColors = [
   { border: '#9966FF', background: 'rgba(153, 102, 255, 0.2)' }, 
   { border: '#FF9F40', background: 'rgba(255, 159, 64, 0.2)' }, 
   { border: '#C9CBCF', background: 'rgba(201, 203, 207, 0.2)' }, 
-  { border: '#50C878', background: 'rgba(80, 200, 120, 0.2)' }, 
   { border: '#E91E63', background: 'rgba(233, 30, 99, 0.2)' }, 
-  { border: '#00BCD4', background: 'rgba(0, 188, 212, 0.2)' }  
+  { border: '#00BCD4', background: 'rgba(0, 188, 212, 0.2)' } 
 ];
 
 const WeatherChart = memo(({ data, highlightedPoint }) => {
@@ -35,7 +34,7 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
     const datasets = cities.map((city, index) => {
       const cityColor = cityColors[index % cityColors.length];
       const isHighlightedCity = highlightedPoint && highlightedPoint.city_name === city;
-      
+
       const pointColors = dates.map(date => {
         if (isHighlightedCity && highlightedPoint && date === highlightedPoint.date) {
           return '#FFD700';
@@ -70,7 +69,7 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
         pointBackgroundColor: pointColors,
         pointBorderColor: pointColors,
         pointBorderWidth: pointBorderWidths,
-        showLine: true
+        showLine: true 
       };
     });
 
@@ -167,7 +166,7 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
          prevHighlighted.id === nextHighlighted.id &&
          prevHighlighted.city_name === nextHighlighted.city_name &&
          prevHighlighted.date === nextHighlighted.date)) {
-    } else {
+      } else {
       return false;
     }
   }
@@ -187,7 +186,7 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
     const nextItem = nextMap.get(id);
     
     if (!nextItem) {
-      return false;
+      return false; 
     }
     
     if (prevItem === nextItem) {
@@ -202,7 +201,7 @@ const WeatherChart = memo(({ data, highlightedPoint }) => {
   }
   
   if (prevMap.size !== nextMap.size) {
-    return false;
+    return false; 
   }
   
   return true;
